@@ -5,7 +5,7 @@ __email__ = "keithxm23@gmail.com"
 
 import os
 data = {}
-for r,d,f in os.walk("./"):
+for r,d,f in os.walk("./"): #Either point to directory containing syslog files or place this file in that directory
     for file in f:
         if file.endswith(".txt"):
 			data[file] = {}
