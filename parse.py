@@ -35,13 +35,18 @@ for r,d,f in os.walk("./"): #Either point to directory containing syslog files o
 
 
 ### Generating a simple report ###
-pt = PrettyTable(["Program", "Job Running Time (mins)", "CPU Time Spent (ms)", "CPU Time Spent (mins)", "CIR", "COR", "MIR", "MOR", "RIR", "ROR"])
-pt.align["Program"] = "l" # Left align program names
+pt = PrettyTable(["Program", "JRT (mins)", "CTS (ms)", "CTS (mins)", "CIR", "COR", "MIR", "MOR", "RIR", "ROR"])
+pt.align["Program"] = "l"
+align_left = ["CIR", "COR", "MIR", "MOR", "RIR", "ROR"]
+for a in align_left:
+	pt.align[a] = "r"
 pt.padding_width = 1 # One space between column edges and contents (default)
-for f in data:
-	pt.add_row([f, data[f]['Job Runtime'], data[f]['CPU time spent (ms)'], str("%.2f" % (float(data[f]['CPU time spent (ms)'])/60000.0)), data[f]['Combine input records'], data[f]['Combine output records'], data[f]['Map input records'], data[f]['Map output records'], data[f]['Reduce input records'], data[f]['Reduce output records']])
-print pt.get_string(sortby="Program")
+for f in sorted(data.keys()):
+	pt.add_row([f.split("_")[0], data[f]['Job Runtime'], data[f]['CPU time spent (ms)'], str("%.2f" % (float(data[f]['CPU time spent (ms)'])/60000.0)), data[f]['Combine input records'], data[f]['Combine output records'], data[f]['Map input records'], data[f]['Map output records'], data[f]['Reduce input records'], data[f]['Reduce output records']])
+print pt
 print """Key:
+JRT = Job Running Time
+CTS = CPU Time Spent
 CIR = Combine Input Records
 COR = Combine Output Records
 MIR = Map Input Records
