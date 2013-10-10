@@ -4,6 +4,8 @@ __author__ = "Keith Mascarenhas"
 __email__ = "keithxm23@gmail.com"
 
 import os
+from datetime import timedelta
+import datetime
 data = {}
 for r,d,f in os.walk("./"): #Either point to directory containing syslog files or place this file in that directory
     for file in f:
@@ -11,18 +13,26 @@ for r,d,f in os.walk("./"): #Either point to directory containing syslog files o
 			data[file] = {}
 			with open(file) as f:
 				seenJobComplete = False
+				start = None
+				end = None
 				for line in f:
 					if not seenJobComplete:
 						seenJobComplete = 'Job complete' in line
-					
+						end = datetime.datetime.strptime(line.split(',')[0], "%Y-%m-%d %H:%M:%S")
+						
 					if seenJobComplete:
 						if '=' in line:
 							tmp = line.split('(main):')[1].split('=')
 							data[file][tmp[0].strip()] = tmp[1].strip()
-				
+					else:
+						if 'Running job:' in line:
+							start = datetime.datetime.strptime(line.split(',')[0], "%Y-%m-%d %H:%M:%S")
+							
+					
+				data[file]['Job Runtime'] =  str("%.2f" % ((end - start).seconds/60.0))
 
 ### Generating a simple report ###
 # Syslog Filename | Cpu time spent (ms) | Cpu time spent (minutes) | Combine input records | Combine input records
-print 'Syslog Name \t\t| CPU(ms) \t| CPU(mins) \t| Combine IP | Combine OP'
+print 'Syslog Name \t\t| JobRunningTime(mins) \t| CPU(ms) \t| CPU(mins) \t| Combine IP | Combine OP'
 for f in data:
-	print f+'\t|\t'+data[f]['CPU time spent (ms)']+'\t|\t'+str("%.2f" % (float(data[f]['CPU time spent (ms)'])/60000.0))+'\t|  '+data[f]['Combine input records']+' | '+data[f]['Combine output records']
+	print f+'\t|\t'+data[f]['Job Runtime']+'\t\t|'+data[f]['CPU time spent (ms)']+'\t|\t'+str("%.2f" % (float(data[f]['CPU time spent (ms)'])/60000.0))+' \t|  '+data[f]['Combine input records']+' | '+data[f]['Combine output records']
