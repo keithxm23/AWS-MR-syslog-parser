@@ -8,4 +8,4 @@ It's a tiny Python script that parses your syslog files and generates tabular re
 Just place the file in the directory containing all your syslog text files and run $~ python parse.py from your command line.
  
 ### Example Output:
-![alt tag](https://github.com/keithxm23/AWS-MR-syslog-parser/blob/master/prettytables.PNG)
+![alt tag](https://raw.github.com/keithxm23/AWS-MR-syslog-parser/master/prettytables.PNG)
